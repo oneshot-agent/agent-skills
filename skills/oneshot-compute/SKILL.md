@@ -87,5 +87,6 @@ await agent.tagReceiptValue('receipt_id', { type: 'revenue', amount: 500, label:
 
 ## Pricing
 
-Compute goals charge for the budget you set plus the underlying tool calls they make. Analytics
-calls (`spendBreakdown`, `rocs`, `receiptsList`, `tagReceiptValue`) are free.
+Compute goals charge for the budget you set plus the underlying tool calls they make; analytics
+calls (`spendBreakdown`, `rocs`, `receiptsList`, `tagReceiptValue`) are free. See current
+per-tool pricing at https://docs.oneshotagent.com/pricing.

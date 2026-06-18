@@ -69,7 +69,5 @@ Always set `maxCost`.
 
 ## Pricing
 
-| Action | Cost |
-|--------|------|
-| Browser task | per-task, scales with steps (guard with `maxCost`) |
-| Create/list/delete profile | Free |
+Browser tasks are paid and scale with steps (guard with `maxCost`); profile create/list/delete
+are free. See current per-tool pricing at https://docs.oneshotagent.com/pricing.

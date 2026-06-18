@@ -103,12 +103,6 @@ await agent.personInteractions({ social_media_url: 'https://x.com/janedoe', type
 
 ## Pricing
 
-| Action | Cost |
-|--------|------|
-| People search | ~$0.10 per result |
-| Enrich profile | ~$0.10 |
-| Find email | ~$0.10 |
-| Verify email | ~$0.01 |
-| Deep person intel (dossier, socials, articles, …) | per-call, varies |
-
-Set `maxCost` on `peopleSearch` (scales with `limit`) and the deep-intel tools.
+These are paid per-call (people search scales with the number of results). See current per-tool
+pricing at https://docs.oneshotagent.com/pricing. Set `maxCost` on `peopleSearch` (scales with
+`limit`) and the deep-intel tools.

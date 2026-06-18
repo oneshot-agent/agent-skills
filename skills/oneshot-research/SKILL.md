@@ -58,12 +58,8 @@ agent on a specific source before acting.
 
 ## Pricing
 
-| Action | Cost |
-|--------|------|
-| Research (quick) | ~$0.50 |
-| Research (deep) | ~$2.00 |
-| Web search | low per-query |
-| Web read | low per-page |
+`research` cost varies by depth; web search and web read are low per-call. See current per-tool
+pricing at https://docs.oneshotagent.com/pricing.
 
 Pass `maxCost` on `research` (variable by depth/sources). For broader person-specific
 intelligence (dossiers, social profiles, articles about a person), use the `oneshot-enrichment`

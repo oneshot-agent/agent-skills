@@ -1,7 +1,7 @@
 ---
 name: oneshot-email
 description: |
-  Send and receive real email autonomously with the OneShot SDK, paid per-send in USDC via x402.
+  Send and receive real email autonomously with the OneShot SDK, paid in USDC via x402.
   Use when an agent needs to send transactional or outreach email (with attachments, custom
   sending domain, reply threading), read its inbound inbox, or manage its pool of warmed sending
   domains. Requires OneShot wallet setup — see the `oneshot` skill first.
@@ -61,8 +61,8 @@ OneShot protects deliverability with a pool of warmed sending domains:
 If a pinned domain is still warming or over its daily limit, the send still proceeds but
 `result.warning` is set (`pinned_domain_warming` / `pinned_over_limit`) — back off accordingly.
 An un-pinned send with **no** eligible owned domain is a hard `400 no_sending_domain` (there is
-no shared fallback sender; the agent must own a sending domain — first send provisions one,
-~$10 one-time).
+no shared fallback sender; the agent must own a sending domain — the first send provisions one,
+billed once).
 
 ### Manage the domain pool
 
@@ -86,10 +86,8 @@ to `agent.email(...)`.
 
 ## Pricing
 
-| Action | Cost |
-|--------|------|
-| Send email | ~$0.01/email (+ ~$10 one-time first domain provisioning) |
-| Inbox list/get | Free |
+Inbox reads are free; sending is paid (the first send also provisions a sending domain, billed
+once). See current per-tool pricing at https://docs.oneshotagent.com/pricing.
 
 ## Errors
 

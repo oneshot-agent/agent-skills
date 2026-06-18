@@ -1,8 +1,8 @@
 ---
 name: oneshot-messaging
 description: |
-  Send SMS and place autonomous AI phone calls with the OneShot SDK, paid per-message/per-minute
-  in USDC via x402. Use when an agent needs to text one or many recipients (E.164), read its SMS
+  Send SMS and place autonomous AI phone calls with the OneShot SDK, paid in USDC via x402.
+  Use when an agent needs to text one or many recipients (E.164), read its SMS
   inbox, or make an outbound voice call that pursues an objective (scheduling, follow-up, support)
   and returns a transcript + summary. Requires OneShot wallet setup — see the `oneshot` skill first.
 metadata:
@@ -78,10 +78,7 @@ the first time the agent provisions a number (surfaced in the quote / `needs_pho
 
 ## Pricing
 
-| Action | Cost |
-|--------|------|
-| SMS | ~$0.035 per segment (+ one-time phone registration on first use) |
-| Voice | ~$0.25/minute (+ one-time phone registration on first use) |
-| SMS/voice inbox | Free |
-
-Always pass `maxCost` on `voice` (duration-based) and on multi-recipient `sms`.
+Inbox reads are free; SMS and voice are paid, and a one-time phone registration fee applies on
+first use (surfaced in the quote). See current per-tool pricing at
+https://docs.oneshotagent.com/pricing. Always pass `maxCost` on `voice` (duration-based) and on
+multi-recipient `sms`.

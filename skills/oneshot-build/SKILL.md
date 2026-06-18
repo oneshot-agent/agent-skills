@@ -65,7 +65,6 @@ by default).
 
 ## Pricing
 
-| Action | Cost |
-|--------|------|
-| Build website | ~$10+ (scales with sections, AI images, lead capture, domain) |
-| Update build | Discounted vs new build |
+Build cost scales with sections, AI images, lead capture, source analysis, and custom domain;
+updates are discounted vs a fresh build. Guard with `maxCost`. See current per-tool pricing at
+https://docs.oneshotagent.com/pricing.

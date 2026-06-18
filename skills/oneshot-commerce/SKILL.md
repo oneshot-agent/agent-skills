@@ -61,7 +61,5 @@ pay or the call fails fast before signing. It's an async order — polls to comp
 
 ## Pricing
 
-| Action | Cost |
-|--------|------|
-| Product search | Free |
-| Buy | Product total + service fee (guard with `maxCost`) |
+Product search is free; a purchase costs the product total plus a service fee (guard with
+`maxCost`). See current per-tool pricing at https://docs.oneshotagent.com/pricing.
