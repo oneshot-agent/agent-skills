@@ -41,7 +41,7 @@ const inbox = await agent.smsInboxList({ limit: 50, from: '+15551234567', since:
 const msg = await agent.smsInboxGet('message_id');
 ```
 
-`smsInboxList`/`smsInboxGet` are **free**.
+`smsInboxList`/`smsInboxGet` are **free**. The SDK signs a read proof (`x-agent-proof`) so the API can confirm you own the wallet before returning your messages — automatic; use `@oneshot-agent/sdk` ≥ 0.25.0 / `oneshot-python` ≥ 0.17.0.
 
 ## Voice — `agent.voice(options)`
 
