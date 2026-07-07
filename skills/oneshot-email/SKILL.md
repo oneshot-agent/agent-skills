@@ -84,6 +84,8 @@ const email = await agent.inboxGet('email_id'); // full InboxEmail
 `inboxList` and `inboxGet` are **free**. To reply, pass the email's `id` as `reply_to_email_id`
 to `agent.email(...)`.
 
+The SDK signs a read proof (`x-agent-proof`) on inbox reads so the API can confirm you own the wallet before returning your mail — automatic; use `@oneshot-agent/sdk` ≥ 0.25.0 / `oneshot-python` ≥ 0.17.0.
+
 ## Pricing
 
 Inbox reads are free; sending is paid (the first send also provisions a sending domain, billed

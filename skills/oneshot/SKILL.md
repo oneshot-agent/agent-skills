@@ -47,6 +47,8 @@ For use inside an MCP client (Claude Desktop, Claude Code, Cursor, …) instead 
 
 OneShot needs a wallet to sign x402 payments. Two options:
 
+> **Read endpoints** (inbox, SMS inbox, notifications, balance, browser profiles) return private, per-agent data. The SDK automatically signs a short-lived EIP-712 **read proof** (`x-agent-proof` header) on each read so the API can confirm you control the wallet — no extra code. Use `@oneshot-agent/sdk` ≥ 0.25.0 (or `oneshot-python` ≥ 0.17.0).
+
 ### Option A — Coinbase CDP Wallet (recommended, no private keys)
 
 The wallet is managed server-side by Coinbase; signing happens in a secure enclave. Set:

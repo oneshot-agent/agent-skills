@@ -64,6 +64,8 @@ await agent.deleteBrowserProfile(profile.id);                       // free
 await agent.browser({ task: 'Open the dashboard and download this month\'s invoice.', profile_id: profile.id });
 ```
 
+Profiles are scoped to your wallet — you only see and can attach your own. The SDK signs a read proof (`x-agent-proof`) so the API can enforce that ownership; automatic with `@oneshot-agent/sdk` ≥ 0.25.0.
+
 Profile create/list/delete are **free**; running a task is paid (priced by estimated steps).
 Always set `maxCost`.
 
