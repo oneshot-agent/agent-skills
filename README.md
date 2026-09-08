@@ -23,7 +23,8 @@ npx skills add oneshot-agent/agent-skills --list
 ```
 
 Start with the **`oneshot`** skill — it covers install, wallet/auth (Coinbase CDP or raw key),
-funding, and the shared options every paid tool accepts. Then add the capability skills you need.
+funding, **spend budgets**, and the shared options every paid tool accepts. Then add the
+capability skills you need.
 
 ## Skills
 
@@ -33,7 +34,9 @@ funding, and the shared options every paid tool accepts. Then add the capability
 | [`oneshot-email`](skills/oneshot-email/SKILL.md) | Send/receive email, attachments, reply threading, sending-domain pool & warmup |
 | [`oneshot-messaging`](skills/oneshot-messaging/SKILL.md) | SMS send/inbox and autonomous AI voice calls |
 | [`oneshot-research`](skills/oneshot-research/SKILL.md) | Deep cited research, web search, read-a-URL-as-markdown |
-| [`oneshot-enrichment`](skills/oneshot-enrichment/SKILL.md) | People search, profile enrichment, find/verify email, deep person intelligence |
+| [`oneshot-enrichment`](skills/oneshot-enrichment/SKILL.md) | People & company search, profile/company enrichment, find/verify email, deep person intelligence |
+| [`oneshot-local`](skills/oneshot-local/SKILL.md) | Local business discovery by category × location; name + address → domain, phone, status |
+| [`oneshot-gov`](skills/oneshot-gov/SKILL.md) | Federal solicitations (SAM.gov) by NAICS, with the contracting officer's contact |
 | [`oneshot-commerce`](skills/oneshot-commerce/SKILL.md) | Product search and autonomous purchase |
 | [`oneshot-browser`](skills/oneshot-browser/SKILL.md) | Autonomous browser tasks + persistent logged-in profiles |
 | [`oneshot-build`](skills/oneshot-build/SKILL.md) | Generate & deploy websites, then update them |
@@ -50,6 +53,7 @@ and [`@oneshot-agent/mcp-server`](https://www.npmjs.com/package/@oneshot-agent/m
 ## Links
 
 - OneShot: https://oneshotagent.com · Docs: https://docs.oneshotagent.com
+- Cursor plugin (these tools plus spend-safety rules): https://github.com/tormine/oneshot-cursor-plugin
 - Soul.Markets: https://soul.mds.markets
 - Skills ecosystem: https://skills.sh
 

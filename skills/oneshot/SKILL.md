@@ -5,12 +5,13 @@ description: |
   paid actions — email, SMS, voice calls, research, person enrichment, commerce, browser
   automation, website builds, and autonomous compute goals — settled in USDC via the x402
   protocol on Base. Use this skill FIRST to install, choose a wallet (Coinbase CDP or raw
-  private key), fund the agent, and understand shared options (maxCost, wait, idempotency).
-  Then load the capability-specific skills: oneshot-email, oneshot-messaging, oneshot-research,
-  oneshot-enrichment, oneshot-commerce, oneshot-browser, oneshot-build, oneshot-compute.
+  private key), fund the agent, set spend budgets, and understand shared options (maxCost, wait,
+  idempotency). Then load the capability-specific skills: oneshot-email, oneshot-messaging,
+  oneshot-research, oneshot-enrichment, oneshot-local, oneshot-gov, oneshot-commerce,
+  oneshot-browser, oneshot-build, oneshot-compute.
 metadata:
   author: oneshotagent
-  version: "2.0.0"
+  version: "2.1.0"
   homepage: "https://oneshotagent.com"
 ---
 
@@ -28,7 +29,9 @@ This is the **core setup skill**. Install once, then use the focused skills for 
 | `oneshot-email` | Send email, inbox, sending-domain pool & warmup |
 | `oneshot-messaging` | SMS send/inbox, autonomous voice calls |
 | `oneshot-research` | Deep research, web search, read-a-URL |
-| `oneshot-enrichment` | People search, profile enrichment, find/verify email, person intelligence |
+| `oneshot-enrichment` | People & company search, profile/company enrichment, find/verify email, person intelligence |
+| `oneshot-local` | Local business discovery and name+address → domain/phone resolution |
+| `oneshot-gov` | Federal solicitations (SAM.gov) with the contracting officer's contact |
 | `oneshot-commerce` | Product search and autonomous purchase |
 | `oneshot-browser` | Autonomous browser tasks + persistent profiles |
 | `oneshot-build` | Generate & deploy websites |
@@ -121,6 +124,40 @@ const usdc = await agent.getBalance();         // returns a string, e.g. "12.50"
 const unified = await agent.getUnifiedBalance(); // { on_chain_balance, credits_balance, currency, address, chain_id }
 ```
 
+## Spend budgets (set these before the agent runs unattended)
+
+`maxCost` caps one call. A budget caps the agent. Set both — an agent in a retry loop can
+spend a lot of small, individually-reasonable amounts.
+
+```bash
+export ONESHOT_BUDGET_DAILY="25"            # max USDC per UTC day
+export ONESHOT_BUDGET_PER_TRANSACTION="2"   # max USDC for any single call
+export ONESHOT_BUDGET_ALERT_AT="0.8"        # warn at 80% of daily (default 0.8)
+export ONESHOT_BUDGET_PAUSE_AT="1.0"        # stop paid calls at 100% (default 1.0)
+export ONESHOT_BUDGET_ALERT_EMAIL="you@example.com"
+```
+
+Caps are enforced **server-side**, not in the client: once the daily cap is reached, paid
+calls are rejected with `budget_exceeded` no matter what the caller does. Read the current
+state at any time:
+
+```typescript
+const b = await agent.budgets();
+// { daily_usdc, per_transaction_usdc, alert_at, pause_at,
+//   spent_today_usdc, remaining_usdc, pct_used, resets_at }
+```
+
+Two things worth knowing:
+
+- **A blank value is treated as unset**, deliberately — `${VAR}` templating in Docker Compose
+  and CI yields `""` for an unset variable, and failing startup there would break every
+  deployment that templates optional vars. A *set but invalid* value (`"abc"`, `-5`) fails
+  startup loudly rather than silently becoming "no cap".
+- **In the MCP server, the budget is read-only to the model.** The only budget tool exposed is
+  `oneshot_budget_status`. There is no tool to raise a cap — a guardrail the agent can lift
+  itself is not a guardrail. Set the limits in the environment, where the model cannot reach
+  them.
+
 ## Shared options (every paid tool)
 
 All paid methods accept these on their options object:
@@ -135,7 +172,7 @@ All paid methods accept these on their options object:
 | `memo?: string` | Human-readable reason, stored on the receipt for audit (≤1000 chars). |
 | `valueTag?: { type, amount?, label? }` | Tag the receipt's value for RoCS analytics. |
 | `decisionContext?: { goal?, goalId?, alternatives?, confidence? }` | Machine-readable why, for supervisor agents. |
-| `idempotencyKey?: string` | Replay protection (24h). Currently honored by `email`; other tools ignore it until their routes opt in. |
+| `idempotencyKey?: string` | Replay protection (24h). Honored by `email` and the durable enrichment endpoints — `enrichProfile`, `findEmail`, `verifyEmail` — where the SDK attaches one automatically so a timed-out call can be recovered rather than repaid. Other tools ignore it until their routes opt in. |
 
 Example with guards:
 
@@ -182,6 +219,47 @@ try {
 > Note: there is no `InsufficientBalanceError` — a low balance surfaces as a `ToolError`/`OneShotError`.
 > Check `getBalance()` before expensive calls instead.
 
+### Recovering a timed-out call
+
+A `JobTimeoutError` means your client stopped waiting — not that the work stopped, and not
+that you were not charged. Blindly retrying pays twice. For the reliability-tracked endpoints
+(`enrich/profile`, `enrich/email`, `verify/email`) the SDK attaches an idempotency key
+automatically; recover the original request with it instead of re-running:
+
+```typescript
+const key = crypto.randomUUID();
+try {
+  await agent.enrichProfile({ linkedin_url: url, idempotencyKey: key });
+} catch (err) {
+  if (err instanceof JobTimeoutError) {
+    const rec = await agent.recoverRequest({ endpoint: 'enrich/profile', idempotencyKey: key });
+    // rec.{ request_id, receipt_id, status, settlement_status }
+  }
+}
+```
+
+Before assuming a failure is yours, check whether it is ours:
+
+```typescript
+const status = await agent.getServiceStatus(); // { status: 'healthy' | 'degraded', observed_at, dependencies }
+```
+
+`degraded` means an upstream vendor is struggling. Retrying into a degraded dependency burns
+budget on empty results — wait it out instead.
+
+## Notifications
+
+Free, read-only, and how the platform tells the agent about things it did not ask for —
+budget alerts, domain warmup state changes, job failures.
+
+```typescript
+const { notifications } = await agent.notifications({ unread: true, limit: 50 });
+await agent.markNotificationRead(notificationId);
+```
+
+Poll these on a long-running agent rather than discovering a blocked sending domain from a
+run of failed sends.
+
 ## Test mode
 
 By default the SDK targets production (Base mainnet, real USDC). To experiment on Base Sepolia
@@ -207,7 +285,9 @@ Add to your client config (Claude Desktop `claude_desktop_config.json`, Claude C
       "env": {
         "CDP_API_KEY_ID": "your-api-key-id",
         "CDP_API_KEY_SECRET": "your-api-key-secret",
-        "CDP_WALLET_SECRET": "your-wallet-secret"
+        "CDP_WALLET_SECRET": "your-wallet-secret",
+        "ONESHOT_BUDGET_DAILY": "25",
+        "ONESHOT_BUDGET_PER_TRANSACTION": "2"
       }
     }
   }
@@ -216,7 +296,13 @@ Add to your client config (Claude Desktop `claude_desktop_config.json`, Claude C
 
 (Use `ONESHOT_WALLET_PRIVATE_KEY` instead of the `CDP_*` vars for raw-key auth.) The server
 exposes the same tools as the SDK, namespaced `oneshot_<action>` (e.g. `oneshot_email`,
-`oneshot_research`, `oneshot_commerce_buy`).
+`oneshot_research`, `oneshot_commerce_buy`) — 50 of them. Set the `ONESHOT_BUDGET_*` vars
+here: an MCP client hands the tools to a model, and the model cannot raise a cap it can only
+read through `oneshot_budget_status`.
+
+For Cursor specifically, the **OneShot Agent plugin** in the Cursor marketplace ships this
+config plus spend-safety rules, workflow skills, and a read-only research subagent:
+https://github.com/tormine/oneshot-cursor-plugin
 
 ## Resources
 

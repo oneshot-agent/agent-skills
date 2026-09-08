@@ -8,7 +8,7 @@ description: |
   caps. Requires OneShot wallet setup — see the `oneshot` skill first.
 metadata:
   author: oneshotagent
-  version: "2.0.0"
+  version: "2.1.0"
   homepage: "https://oneshotagent.com"
 ---
 
@@ -80,6 +80,10 @@ const breakdown = await agent.spendBreakdown({ period: 30 });   // categories[],
 const rocs       = await agent.rocs({ period: 30 });             // { rocs, total_spend, total_value, period_days }
 const receipts   = await agent.receiptsList({ period: 30, category: 'email', limit: 50 });
 await agent.tagReceiptValue('receipt_id', { type: 'revenue', amount: 500, label: 'closed deal' });
+
+// Return on compute spend broken down per goal — which objectives actually paid off
+const byGoal = await agent.rocsByGoal({ period: 30 });        // all goals in the window
+const one    = await agent.rocsByGoal({ goalId: 'goal_...' }); // a single goal
 ```
 
 **RoCS** (Return on Cognitive Spend) compares value produced vs USDC spent — tag receipts with
