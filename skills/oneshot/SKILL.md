@@ -8,7 +8,7 @@ description: |
   private key), fund the agent, set spend budgets, and understand shared options (maxCost, wait,
   idempotency). Then load the capability-specific skills: oneshot-email, oneshot-messaging,
   oneshot-research, oneshot-enrichment, oneshot-local, oneshot-gov, oneshot-commerce,
-  oneshot-browser, oneshot-build, oneshot-compute.
+  oneshot-physical-mail, oneshot-browser, oneshot-build, oneshot-compute.
 metadata:
   author: oneshotagent
   version: "2.1.0"
@@ -42,6 +42,7 @@ This is the **core setup skill**. Install once, then use the focused skills for 
 | `oneshot-enrichment` | People & company search, profile/company enrichment, find/verify email, person intelligence |
 | `oneshot-local` | Local business discovery and name+address → domain/phone resolution |
 | `oneshot-gov` | Federal solicitations (SAM.gov) with the contracting officer's contact |
+| `oneshot-physical-mail` | Printed letters and postcards — artwork, address validation, approval, tracking |
 | `oneshot-commerce` | Product search and autonomous purchase |
 | `oneshot-browser` | Autonomous browser tasks + persistent profiles |
 | `oneshot-build` | Generate & deploy websites |

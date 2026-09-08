@@ -5,8 +5,8 @@
 Agent Skills that teach any coding agent (Claude Code, Cursor, Codex, and
 [70+ others](https://github.com/vercel-labs/skills#supported-agents)) how to use
 [**OneShot**](https://oneshotagent.com) — infrastructure for autonomous AI agents to execute
-real-world commercial actions (email, SMS, voice, research, enrichment, commerce, browser
-automation, website builds, and autonomous compute goals), priced per call and settled either
+real-world commercial actions (email, SMS, voice, physical mail, research, enrichment,
+commerce, browser automation, website builds, and autonomous compute goals), priced per call and settled either
 in **USDC on Base** via **x402** or by card through **Stripe's Agentic Commerce Protocol**.
 
 ## Install
@@ -37,6 +37,7 @@ capability skills you need.
 | [`oneshot-enrichment`](skills/oneshot-enrichment/SKILL.md) | People & company search, profile/company enrichment, find/verify email, deep person intelligence |
 | [`oneshot-local`](skills/oneshot-local/SKILL.md) | Local business discovery by category × location; name + address → domain, phone, status |
 | [`oneshot-gov`](skills/oneshot-gov/SKILL.md) | Federal solicitations (SAM.gov) by NAICS, with the contracting officer's contact |
+| [`oneshot-physical-mail`](skills/oneshot-physical-mail/SKILL.md) | Printed letters and postcards: artwork upload, address validation, preview, approval, tracking |
 | [`oneshot-commerce`](skills/oneshot-commerce/SKILL.md) | Product search and autonomous purchase |
 | [`oneshot-browser`](skills/oneshot-browser/SKILL.md) | Autonomous browser tasks + persistent logged-in profiles |
 | [`oneshot-build`](skills/oneshot-build/SKILL.md) | Generate & deploy websites, then update them |
