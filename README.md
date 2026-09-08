@@ -6,8 +6,8 @@ Agent Skills that teach any coding agent (Claude Code, Cursor, Codex, and
 [70+ others](https://github.com/vercel-labs/skills#supported-agents)) how to use
 [**OneShot**](https://oneshotagent.com) — infrastructure for autonomous AI agents to execute
 real-world commercial actions (email, SMS, voice, research, enrichment, commerce, browser
-automation, website builds, and autonomous compute goals), settled in **USDC on Base** via the
-**x402** payment protocol.
+automation, website builds, and autonomous compute goals), priced per call and settled either
+in **USDC on Base** via **x402** or by card through **Stripe's Agentic Commerce Protocol**.
 
 ## Install
 

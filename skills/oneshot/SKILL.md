@@ -18,9 +18,19 @@ metadata:
 # OneShot — Setup & Core
 
 OneShot is infrastructure for autonomous AI agents to execute real-world commercial actions.
-Every paid call settles in **USDC on Base** using the **x402** payment protocol — the agent's
-wallet signs an EIP-3009 transfer authorization, the server verifies it, runs the tool, and
-settles on-chain. You hold a wallet with USDC; the SDK handles quoting, signing, and settlement.
+There are two ways to pay for a call, and this SDK uses the first:
+
+- **x402 — USDC on Base.** The agent's wallet signs an EIP-3009 transfer authorization, the
+  server verifies it, runs the tool, and settles on-chain. You hold a wallet with USDC; the
+  SDK handles quoting, signing, and settlement.
+- **Stripe.** Agents that speak Stripe's **Agentic Commerce Protocol** buy the same tool
+  catalog with a card — discover products at `/.well-known/acp/manifest.json`, open a checkout
+  session, complete it with a SharedPaymentToken, and the tool runs. Priced in USD, no wallet
+  and no crypto anywhere. That is a direct HTTP integration, not this SDK.
+
+Both rails spend a **prepaid credit balance first** when the agent has one, and a fixed-price
+call fully covered by credits skips the payment step entirely — so a `getBalance()` of zero
+does not always mean a call will fail.
 
 This is the **core setup skill**. Install once, then use the focused skills for each capability:
 
