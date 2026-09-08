@@ -8,7 +8,7 @@ description: |
   caps. Requires OneShot wallet setup — see the `oneshot` skill first.
 metadata:
   author: oneshotagent
-  version: "2.0.0"
+  version: "2.1.0"
   homepage: "https://oneshotagent.com"
 ---
 
@@ -60,6 +60,10 @@ await agent.resumeComputeGoal(goalId);
 await agent.cancelComputeGoal(goalId, 'no longer needed'); // returns remaining_budget
 await agent.fundComputeGoal(goalId, 10);                   // top up budget (paid)
 ```
+
+Also available as MCP tools for clients on `@oneshot-agent/mcp-server` instead of the SDK:
+`oneshot_compute_pause`, `oneshot_compute_resume` (both free), and `oneshot_compute_fund`
+(paid — quotes before charging, same confirm-before-spend behavior as `fundComputeGoal`).
 
 ### Human-in-the-loop
 
