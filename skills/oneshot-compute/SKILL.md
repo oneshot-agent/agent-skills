@@ -8,7 +8,7 @@ description: |
   caps. Requires OneShot wallet setup — see the `oneshot` skill first.
 metadata:
   author: oneshotagent
-  version: "2.1.0"
+  version: "2.2.0"
   homepage: "https://oneshotagent.com"
 ---
 
@@ -60,6 +60,31 @@ await agent.resumeComputeGoal(goalId);
 await agent.cancelComputeGoal(goalId, 'no longer needed'); // returns remaining_budget
 await agent.fundComputeGoal(goalId, 10);                   // top up budget (paid)
 ```
+
+### From an MCP client
+
+Every one of those is also an MCP tool, so a client on `@oneshot-agent/mcp-server`
+reaches them without importing the SDK:
+
+| SDK | MCP tool | |
+|---|---|---|
+| `getComputeGoal` | `oneshot_compute_status` | free |
+| `getComputeTasks` | `oneshot_compute_tasks` | free |
+| `pauseComputeGoal` | `oneshot_compute_pause` | free |
+| `resumeComputeGoal` | `oneshot_compute_resume` | free |
+| `cancelComputeGoal` | `oneshot_compute_cancel` | free |
+| `respondToComputeTask` | `oneshot_compute_respond` | free |
+| `fundComputeGoal` | `oneshot_compute_fund` | **paid** |
+
+`oneshot_compute_pause`, `_resume` and `_fund` need **mcp-server ≥ 0.21.0**; older
+versions can start and cancel a goal but have no move in between.
+
+Free does not mean harmless here. `oneshot_compute_cancel` ends the goal and its
+plan — the budget refunds, the work does not — and `oneshot_compute_respond`
+answers a human-in-the-loop question *as the developer*, unblocking paid work.
+Confirm both before calling them. `oneshot_compute_fund` moves USDC into the goal
+and quotes before charging, the same confirm-before-spend contract as every other
+paid tool.
 
 ### Human-in-the-loop
 
