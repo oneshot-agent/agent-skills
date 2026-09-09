@@ -7,7 +7,7 @@ description: |
   domains. Requires OneShot wallet setup — see the `oneshot` skill first.
 metadata:
   author: oneshotagent
-  version: "2.0.0"
+  version: "2.1.0"
   homepage: "https://oneshotagent.com"
 ---
 
@@ -52,7 +52,12 @@ Plus shared options (`maxCost`, `wait`, `memo`, `idempotencyKey`, …) from the 
 
 ### Sending domains & warmup (important)
 
-OneShot protects deliverability with a pool of warmed sending domains:
+**Every agent sends only from domains it owns.** There is no shared sender and no house
+fallback: `oneshotagent.com` is OneShot's own domain, and any address on a domain the caller
+does not own is rejected `domain_not_owned`. An agent with no domain has to register one —
+passing a new `from_domain` provisions and registers it, billed once on first send.
+
+Within the domains an agent owns, OneShot protects deliverability with a warmed pool:
 
 - **Rotate mode (recommended):** omit `from_domain`/`from_mailbox`. The server picks a warmed
   domain from the agent's pool. The chosen address comes back on the response.
@@ -60,9 +65,14 @@ OneShot protects deliverability with a pool of warmed sending domains:
 
 If a pinned domain is still warming or over its daily limit, the send still proceeds but
 `result.warning` is set (`pinned_domain_warming` / `pinned_over_limit`) — back off accordingly.
-An un-pinned send with **no** eligible owned domain is a hard `400 no_sending_domain` (there is
-no shared fallback sender; the agent must own a sending domain — the first send provisions one,
-billed once).
+An un-pinned send with **no** eligible owned domain is a hard `400 no_sending_domain`.
+
+> **Known issue — do not pin `from_mailbox` on its own.** The clients build the address from
+> both knobs, and with no `from_domain` to pair it with they fall back to a domain no agent can
+> send from, so the call fails `domain_not_owned`. The Python client does this on *every* send
+> that omits `from_domain`, which makes rotate mode unreachable from Python until it is fixed —
+> pass an owned `from_domain` explicitly there. In TypeScript, rotate mode works as documented
+> as long as you omit **both** knobs. Tracked in `tormine/oneshot#688`.
 
 ### Manage the domain pool
 
@@ -94,4 +104,5 @@ once). See current per-tool pricing at https://docs.oneshotagent.com/pricing.
 ## Errors
 
 `ContentBlockedError` (policy), `ValidationError` (bad address/body), `ToolError` (e.g.
-`no_sending_domain`). See the `oneshot` skill for the full set.
+`no_sending_domain` — the agent owns no eligible domain; `domain_not_owned` — the address is on
+a domain another account owns). See the `oneshot` skill for the full set.

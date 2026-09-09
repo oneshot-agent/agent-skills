@@ -2,17 +2,18 @@
 name: oneshot-enrichment
 description: |
   Find, verify, and enrich people and companies with the OneShot SDK, paid in USDC via x402.
-  Use when an agent needs to search for people by title/company/skills, enrich a LinkedIn/email/name
-  into a full profile, find or verify a work email, or build deep person intelligence — dossiers,
-  social profiles, articles, newsfeed, interests, and follower/following interactions. Requires
-  OneShot wallet setup — see the `oneshot` skill first.
+  Use when an agent needs to search for people by title/company/skills, search companies by
+  industry/size/funding, enrich a LinkedIn/email/name/domain/ticker into a full profile, find or
+  verify a work email, or build deep person intelligence — dossiers, social profiles, articles,
+  newsfeed, interests, and follower/following interactions. Requires OneShot wallet setup — see
+  the `oneshot` skill first.
 metadata:
   author: oneshotagent
-  version: "2.0.0"
+  version: "2.1.0"
   homepage: "https://oneshotagent.com"
 ---
 
-# OneShot — People & Person Intelligence
+# OneShot — People, Companies & Person Intelligence
 
 Set up auth/wallet via the **`oneshot`** skill, then:
 
@@ -20,6 +21,16 @@ Set up auth/wallet via the **`oneshot`** skill, then:
 import { OneShot } from '@oneshot-agent/sdk';
 const agent = await OneShot.create({ cdp: true });
 ```
+
+## Pick the right source first
+
+These tools index people by corporate role and companies by firmographics. Two audiences are
+not in that index at all, and searching for them here costs money and returns nothing:
+
+| Target | Skill |
+|---|---|
+| Independent local business (contractor, practice, restaurant) | `oneshot-local` |
+| Government buyer / federal contract opportunity | `oneshot-gov` |
 
 ## People search — `agent.peopleSearch(options)`
 
@@ -71,6 +82,36 @@ const v = await agent.verifyEmail({ email: 'jane@acme.com' });
 ```
 
 Pair with the `oneshot-email` skill: verify before sending to protect deliverability.
+
+## Company search — `agent.companySearch(options)`
+
+```typescript
+const found = await agent.companySearch({
+  industry: ['software', 'fintech'],
+  location: ['San Francisco', 'New York'],
+  size: '51-200',                 // or min_employee_count / max_employee_count
+  funding_stage: 'series_b',
+  tags: ['payments'],
+  name: 'Acme',                   // narrow by name or domain when you have one
+  domain: 'acme.com',
+  limit: 10,                      // default 10
+});
+```
+
+All filters optional. Use it to build a target account list, then `peopleSearch` with
+`company_domains` to find the humans inside the accounts worth pursuing — that order costs
+less than searching people first and filtering companies after.
+
+## Enrich a company — `agent.enrichCompany(options)`
+
+```typescript
+const company = await agent.enrichCompany({ domain: 'acme.com' });
+// or { name } / { linkedin_url } / { ticker: 'CRM' }
+```
+
+At least one of `domain`, `name`, `linkedin_url`, or `ticker` is required — the SDK throws a
+`ValidationError` client-side before spending if you pass none. `domain` is the most reliable
+identifier; `name` alone is ambiguous for anything but a well-known brand.
 
 ## Deep person intelligence
 
