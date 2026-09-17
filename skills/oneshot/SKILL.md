@@ -11,7 +11,7 @@ description: |
   oneshot-physical-mail, oneshot-browser, oneshot-build, oneshot-compute.
 metadata:
   author: oneshotagent
-  version: "2.1.0"
+  version: "2.2.0"
   homepage: "https://oneshotagent.com"
 ---
 
@@ -307,13 +307,39 @@ Add to your client config (Claude Desktop `claude_desktop_config.json`, Claude C
 
 (Use `ONESHOT_WALLET_PRIVATE_KEY` instead of the `CDP_*` vars for raw-key auth.) The server
 exposes the same tools as the SDK, namespaced `oneshot_<action>` (e.g. `oneshot_email`,
-`oneshot_research`, `oneshot_commerce_buy`) — 50 of them. Set the `ONESHOT_BUDGET_*` vars
+`oneshot_research`, `oneshot_commerce_buy`) — 61 of them. Set the `ONESHOT_BUDGET_*` vars
 here: an MCP client hands the tools to a model, and the model cannot raise a cap it can only
 read through `oneshot_budget_status`.
 
 For Cursor specifically, the **OneShot Agent plugin** in the Cursor marketplace ships this
 config plus spend-safety rules, workflow skills, and a read-only research subagent:
 https://github.com/tormine/oneshot-cursor-plugin
+
+### Hosted endpoint (Grok Bot, cloud runners, any client without a local process)
+
+The local server above signs x402 payments with your wallet, so it needs a process on your
+machine. Agents that run in someone else's cloud — **Grok Bot**, hosted runners, agent
+platforms — use the same 61 tools over Streamable HTTP at
+`https://win.oneshotagent.com/mcp`, authenticated with an **agent access token** and billed
+to the agent's prepaid **credits** (never x402, never a wallet key in a third-party cloud).
+
+1. Mint a token from any wallet session of the SDK (≥ 0.33.0):
+
+   ```typescript
+   const { token, id } = await agent.createAccessToken({ name: 'grok-bot' });
+   // token is oneshot_… — shown once; agent.revokeAccessToken(id) kills it
+   ```
+
+2. Add credits to the agent (operator grant today; self-serve top-up is not yet available).
+3. In the client, add an MCP server with URL `https://win.oneshotagent.com/mcp` and header
+   `Authorization: Bearer oneshot_…`. For Grok Bot that is **Add server** → name `oneshot`,
+   the URL, the header — no OAuth step.
+
+A token session can only spend credits, under the agent's stored `ONESHOT_BUDGET_*`-equivalent
+caps (set from a wallet session; read-only from the token via `oneshot_budget_status`). A call
+the balance cannot cover returns `insufficient_credits` with the shortfall; a call over the
+daily cap returns `budget_exceeded` and debits nothing. Full guide:
+https://docs.oneshotagent.com/sdk/remote-mcp
 
 ## Resources
 

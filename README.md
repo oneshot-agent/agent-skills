@@ -30,7 +30,7 @@ capability skills you need.
 
 | Skill | What it does |
 |-------|--------------|
-| [`oneshot`](skills/oneshot/SKILL.md) | **Start here.** Setup, auth, funding, x402 model, shared options, MCP server config |
+| [`oneshot`](skills/oneshot/SKILL.md) | **Start here.** Setup, auth, funding, x402 model, shared options, MCP server config (local, and the hosted endpoint for Grok Bot / cloud agents) |
 | [`oneshot-email`](skills/oneshot-email/SKILL.md) | Send/receive email, attachments, reply threading, sending-domain pool & warmup |
 | [`oneshot-messaging`](skills/oneshot-messaging/SKILL.md) | SMS send/inbox and autonomous AI voice calls |
 | [`oneshot-research`](skills/oneshot-research/SKILL.md) | Deep cited research, web search, read-a-URL-as-markdown |
