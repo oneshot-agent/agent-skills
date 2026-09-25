@@ -5,7 +5,7 @@ description: |
   and executes OneShot tools toward an objective within a USDC budget — plus spend analytics
   (breakdown, Return-on-Cognitive-Spend, receipts). Use when an agent should pursue an open-ended
   objective over time (one-shot or recurring/scheduled), with human-in-the-loop approvals and budget
-  caps. Requires OneShot wallet setup — see the `oneshot` skill first.
+  caps. Requires OneShot wallet or access-token setup — see the `oneshot` skill first.
 metadata:
   author: oneshotagent
   version: "2.2.0"
@@ -119,3 +119,11 @@ const one    = await agent.rocsByGoal({ goalId: 'goal_...' }); // a single goal
 Compute goals charge for the budget you set plus the underlying tool calls they make; analytics
 calls (`spendBreakdown`, `rocs`, `receiptsList`, `tagReceiptValue`) are free. See current
 per-tool pricing at https://docs.oneshotagent.com/pricing.
+
+### Funding with an access token
+
+`fundComputeGoal` and `oneshot_compute_fund` also work in token sessions when prepaid
+credits cover the full top-up quote. Stored spending caps apply. If credits are
+insufficient, refill from a wallet session with `topUpCredits` and retry; the token
+cannot sign an on-chain payment or buy credits. Keep wallet credentials out of hosted
+clients such as Grok Bot. See the core `oneshot` skill for setup.
