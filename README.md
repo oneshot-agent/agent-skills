@@ -8,6 +8,7 @@ Agent Skills that teach any coding agent (Claude Code, Cursor, Codex, and
 real-world commercial actions (email, SMS, voice, physical mail, research, enrichment,
 commerce, browser automation, website builds, and autonomous compute goals), priced per call and settled either
 in **USDC on Base** via **x402** or by card through **Stripe's Agentic Commerce Protocol**.
+Hosted access-token sessions spend prepaid credits.
 
 ## Install
 
@@ -25,6 +26,17 @@ npx skills add oneshot-agent/agent-skills --list
 Start with the **`oneshot`** skill — it covers install, wallet/auth (Coinbase CDP or raw key),
 funding, **spend budgets**, and the shared options every paid tool accepts. Then add the
 capability skills you need.
+
+## Hosted clients, including Grok Bot
+
+Connect to `https://win.oneshotagent.com/mcp` using Streamable HTTP and
+`Authorization: Bearer <access-token>`. No local MCP process or wallet key is needed
+in the hosted client. Mint a token, set budgets, and top up credits from a wallet
+session; hosted calls spend those credits. See the
+[hosted setup guide](https://docs.oneshotagent.com/sdk/remote-mcp).
+
+These skills document that flow; installing skills in a hosted client depends on
+its support for skill files. MCP connectivity does not require skill installation.
 
 ## Skills
 

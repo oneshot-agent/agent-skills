@@ -5,13 +5,13 @@ description: |
   paid actions — email, SMS, voice calls, research, person enrichment, commerce, browser
   automation, website builds, and autonomous compute goals — settled in USDC via the x402
   protocol on Base. Use this skill FIRST to install, choose a wallet (Coinbase CDP or raw
-  private key), fund the agent, set spend budgets, and understand shared options (maxCost, wait,
+  private key) or delegated access token, fund the agent, set spend budgets, and understand shared options (maxCost, wait,
   idempotency). Then load the capability-specific skills: oneshot-email, oneshot-messaging,
   oneshot-research, oneshot-enrichment, oneshot-local, oneshot-gov, oneshot-commerce,
   oneshot-physical-mail, oneshot-browser, oneshot-build, oneshot-compute.
 metadata:
   author: oneshotagent
-  version: "2.1.0"
+  version: "2.2.0"
   homepage: "https://oneshotagent.com"
 ---
 
@@ -30,7 +30,8 @@ There are two ways to pay for a call, and this SDK uses the first:
 
 Both rails spend a **prepaid credit balance first** when the agent has one, and a fixed-price
 call fully covered by credits skips the payment step entirely — so a `getBalance()` of zero
-does not always mean a call will fail.
+does not always mean a call will fail. Access-token sessions spend only prepaid credits
+and never sign an on-chain payment.
 
 This is the **core setup skill**. Install once, then use the focused skills for each capability:
 
@@ -57,9 +58,10 @@ npm install @oneshot-agent/sdk
 For use inside an MCP client (Claude Desktop, Claude Code, Cursor, …) instead of the SDK, see
 [MCP Server](#mcp-server) below.
 
-## Authentication (pick one wallet)
+## Authentication
 
-OneShot needs a wallet to sign x402 payments. Two options:
+Use a wallet session for funding, setting budgets, and managing tokens. For a hosted
+client, use a delegated access token instead of sharing the wallet credentials.
 
 > **Read endpoints** (inbox, SMS inbox, notifications, balance, browser profiles) return private, per-agent data. The SDK automatically signs a short-lived EIP-712 **read proof** (`x-agent-proof` header) on each read so the API can confirm you control the wallet — no extra code. Use `@oneshot-agent/sdk` ≥ 0.25.0 (or `oneshot-python` ≥ 0.17.0).
 
@@ -107,6 +109,29 @@ const agent = await OneShot.create({
 });
 ```
 
+### Option D — Access token for hosted clients
+
+From an existing wallet session, create a token with
+`await agent.createAccessToken({ name: 'grok-bot' })`; the returned `token` is shown
+once. Set spending caps from that wallet session and fund prepaid credits with
+`await agent.topUpCredits(amount)` (USDC via x402).
+
+For Grok Bot or another hosted MCP client, configure Streamable HTTP at
+`https://win.oneshotagent.com/mcp` with `Authorization: Bearer <token>`.
+For SDK callers:
+
+```typescript
+const hosted = await OneShot.create({ accessToken: process.env.ONESHOT_ACCESS_TOKEN });
+```
+
+Hosted calls spend credits. On `insufficient_credits`, refill from the wallet session;
+there is no Stripe card checkout for credit top-ups (ACP purchases are a separate flow). On `budget_exceeded`, report the cap instead of
+retrying or raising it. Tokens cannot manage tokens or budgets. Revoke a token from
+the wallet session with `agent.revokeAccessToken(id)`.
+
+Compute funding works from a token when credits cover the full quote. Tokens cannot
+supply new on-chain USDC. See the [hosted setup guide](https://docs.oneshotagent.com/sdk/remote-mcp).
+
 ### Config options
 
 `OneShot.create(config)` / `new OneShot(config)` accept:
@@ -116,6 +141,7 @@ const agent = await OneShot.create({
 | `privateKey` | Raw key (Option B) |
 | `cdp` | `true` or `{ address }` for CDP (Option A) |
 | `walletProvider` | Custom signer (Option C) |
+| `accessToken` | Credits-only session (Option D); use instead of wallet credentials |
 | `baseUrl` | Override API URL (default `https://win.oneshotagent.com`) |
 | `rpcUrl` | Override Base RPC |
 | `currency` | `'USDC'` (default) or `'ETH'` (auto-swaps ETH→USDC via Uniswap V3 before paying) |
